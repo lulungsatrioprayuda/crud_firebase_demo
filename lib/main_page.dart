@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crud_firebase_demo/item_card.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -7,10 +9,22 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference users = firestore.collection('users');
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.blue[900],
           title: Text('Firestore Demo'),
+          // title: StreamBuilder<DocumentSnapshot>(
+          // stream: users.doc('Ay54ALQUfACuYAV16ql8').snapshots(),
+          // builder: (context, snapshot) {
+          //   if (snapshot.hasData) {
+          //     return Text(snapshot.data.data()['age'].toString());
+          //   } else {
+          //     return Text('Flutter');
+          //   }
+          // }),
         ),
         backgroundColor: Colors.white,
         body: Stack(
@@ -18,6 +32,36 @@ class MainPage extends StatelessWidget {
             ListView(
               children: [
                 //// VIEW DATA HERE
+                /// Catatan: ini hanya sekali ambil
+                // FutureBuilder<QuerySnapshot>(
+                //     future: users.get(),
+                //     builder: (_, snapshot) {
+                //       if (snapshot.hasData) {
+                //         return Column(
+                //           children: snapshot.data.docs
+                //               .map((e) =>
+                //                   ItemCard(e.data()['name'], e.data()['age']))
+                //               .toList(),
+                //         );
+                //       } else {
+                //         return Text('Loading');
+                //       }
+                //     }),
+                // catatan : synced atau nampilin realtime tanpa harus menunggu
+                StreamBuilder<QuerySnapshot>(
+                    stream: users.where('age', isGreaterThan: 15).snapshots(),
+                    builder: (_, snapshot) {
+                      if (snapshot.hasData) {
+                        return Column(
+                          children: snapshot.data.docs
+                              .map((e) =>
+                                  ItemCard(e.data()['name'], e.data()['age']))
+                              .toList(),
+                        );
+                      } else {
+                        return Text('Loading');
+                      }
+                    }),
                 SizedBox(
                   height: 150,
                 )
@@ -73,6 +117,13 @@ class MainPage extends StatelessWidget {
                             ),
                             onPressed: () {
                               //// ADD DATA HERE
+                              users.add({
+                                'name': nameController.text,
+                                'age': int.tryParse(ageController.text) ?? 0,
+                              });
+
+                              nameController.text = '';
+                              ageController.text = '';
                             }),
                       )
                     ],
