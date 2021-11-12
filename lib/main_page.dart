@@ -15,16 +15,16 @@ class MainPage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.blue[900],
-          title: Text('Firestore Demo'),
-          // title: StreamBuilder<DocumentSnapshot>(
-          // stream: users.doc('Ay54ALQUfACuYAV16ql8').snapshots(),
-          // builder: (context, snapshot) {
-          //   if (snapshot.hasData) {
-          //     return Text(snapshot.data.data()['age'].toString());
-          //   } else {
-          //     return Text('Flutter');
-          //   }
-          // }),
+          // title: Text('Firestore Demo'),
+          title: StreamBuilder<DocumentSnapshot>(
+              stream: users.doc('4uNcTH3i5ihytSfoCoTQ').snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(snapshot.data.data()['age'].toString());
+                } else {
+                  return Text('Loading');
+                }
+              }),
         ),
         backgroundColor: Colors.white,
         body: Stack(
@@ -54,8 +54,18 @@ class MainPage extends StatelessWidget {
                       if (snapshot.hasData) {
                         return Column(
                           children: snapshot.data.docs
-                              .map((e) =>
-                                  ItemCard(e.data()['name'], e.data()['age']))
+                              .map((e) => ItemCard(
+                                    e.data()['name'],
+                                    e.data()['age'],
+                                    onUpdate: () {
+                                      users
+                                          .doc(e.id)
+                                          .update({'age': e.data()['age'] + 1});
+                                    },
+                                    onDelete: () {
+                                      users.doc(e.id).delete();
+                                    },
+                                  ))
                               .toList(),
                         );
                       } else {
