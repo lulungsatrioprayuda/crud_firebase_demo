@@ -49,7 +49,7 @@ class MainPage extends StatelessWidget {
                 //     }),
                 // catatan : synced atau nampilin realtime tanpa harus menunggu
                 StreamBuilder<QuerySnapshot>(
-                    stream: users.where('age', isGreaterThan: 15).snapshots(),
+                    stream: users.where('age', isGreaterThan: 1).snapshots(),
                     builder: (_, snapshot) {
                       if (snapshot.hasData) {
                         return Column(
