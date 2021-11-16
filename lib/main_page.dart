@@ -22,7 +22,7 @@ class MainPage extends StatelessWidget {
                 if (snapshot.hasData) {
                   return Text(snapshot.data.data()['age'].toString());
                 } else {
-                  return Text('Loading');
+                  return const Text('Loading');
                 }
               }),
         ),
